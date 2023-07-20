@@ -4,10 +4,12 @@ use dotenv::dotenv;
 use std::env;
 use web3::{self, types::{U64, Transaction}};
 use csv::Writer;
+use std::path::Path;
+use std::fs;
 
 #[derive(Parser)]
 #[command(name="rust_etl")]
-#[command(author="arahangua <arahangua@gmail.com>")]
+#[command(author="arahangua")]
 #[command(version="0.1")]
 #[command(about="practice rust project for etl of on-chain data")]
 struct Cli {
@@ -18,9 +20,10 @@ struct Cli {
 #[derive(Subcommand)]
 enum Commands{
     /// get transactions that belong to the input block number (saved as csv files inside ./outputs folder)
-   EthByBnum { bl_num: Option<String>},
+   EthByBnum {bl_num: Option<String>},
 }
 
+const OUTPUT_FOLDER:&str = "./outputs/";
 
 // The main function, where the program starts executing.
 
@@ -81,7 +84,16 @@ async fn get_tx_by_block(num_str:&String, rpc_https_url:String) {
 
 
 fn save_to_csv(content:Transaction) {
-    let mut wtr = Writer::from_path(format!("./outputs/tx_{:?}.csv", content.hash)).unwrap();
+    let path = Path::new(OUTPUT_FOLDER);
+    // make dirs if not existing
+    if !path.exists(){
+        match fs::create_dir_all(path) {
+            Err(why) => println!("! {:?}", why.kind()),
+            Ok(_) => {},
+        }
+    }
+    let output_fol = format!("{}tx_{:?}.csv", OUTPUT_FOLDER, content.hash);
+    let mut wtr = Writer::from_path(output_fol).unwrap();
     wtr.write_record(&["hash", "nonce", "blockHash", "blockNumber", "transactionIndex", "from", "to", "value", "gasPrice", "gas", "input"]).unwrap();
     wtr.write_record(&[
         format!("{:?}", content.hash),
@@ -109,32 +121,3 @@ fn save_to_csv(content:Transaction) {
 
 
 
-    // // Prepare CSV writer
-    // let mut wtr: Writer = Writer::from_path("block.csv").unwrap();
-
-    // // Write block data to CSV
-    // wtr.write_record(&["number", "hash", "parent_hash", "nonce", "sha3_uncles", "logs_bloom", "transactions_root", "state_root", "receipts_root", "miner", "difficulty", "total_difficulty", "extra_data", "size", "gas_limit", "gas_used", "timestamp", "uncles"]).unwrap();
-    // wtr.write_record(&[
-    //     format!("{:?}", block.number.unwrap()),
-    //     format!("{:?}", block.hash.unwrap()),
-    //     format!("{:?}", block.parent_hash),
-    //     format!("{:?}", block.nonce.unwrap()),
-    //     format!("{:?}", block.sha3_uncles),
-    //     format!("{:?}", block.logs_bloom),
-    //     format!("{:?}", block.transactions_root),
-    //     format!("{:?}", block.state_root),
-    //     format!("{:?}", block.receipts_root),
-    //     format!("{:?}", block.miner),
-    //     format!("{:?}", block.difficulty),
-    //     format!("{:?}", block.total_difficulty),
-    //     format!("{:?}", block.extra_data),
-    //     format!("{:?}", block.size.unwrap()),
-    //     format!("{:?}", block.gas_limit),
-    //     format!("{:?}", block.gas_used),
-    //     format!("{:?}", block.timestamp),
-    //     format!("{:?}", block.uncles),
-    // ]).unwrap();
-
-    // wtr.flush().unwrap();
-    // println!("Block data saved to block.csv");
-// }
