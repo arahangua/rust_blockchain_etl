@@ -55,7 +55,8 @@ async fn get_tx_by_block(num_str:&String, rpc_https_url:String) {
     let conn = web3::Web3::new(http);
 
     //get the block
-    let num:U64 = num_str.parse().expect("not a valid number");
+    let num:U64 = U64::from_dec_str(num_str).expect("not a valid number");
+    println!("exporting block {:?}", num);
     let block_number = web3::types::BlockNumber::Number(num);
     let block = conn.eth().block(web3::types::BlockId::from(block_number)).await.unwrap();
     
@@ -84,7 +85,8 @@ async fn get_tx_by_block(num_str:&String, rpc_https_url:String) {
 
 
 fn save_to_csv(content:Transaction) {
-    let path = Path::new(OUTPUT_FOLDER);
+    let bl_path = format!("{}/block_{:?}/", OUTPUT_FOLDER, content.block_number.unwrap());
+    let path = Path::new(&bl_path);
     // make dirs if not existing
     if !path.exists(){
         match fs::create_dir_all(path) {
@@ -92,7 +94,7 @@ fn save_to_csv(content:Transaction) {
             Ok(_) => {},
         }
     }
-    let output_fol = format!("{}tx_{:?}.csv", OUTPUT_FOLDER, content.hash);
+    let output_fol = format!("{}tx_{:?}.csv", bl_path, content.hash);
     let mut wtr = Writer::from_path(output_fol).unwrap();
     wtr.write_record(&["hash", "nonce", "blockHash", "blockNumber", "transactionIndex", "from", "to", "value", "gasPrice", "gas", "input"]).unwrap();
     wtr.write_record(&[
