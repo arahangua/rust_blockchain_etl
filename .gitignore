@@ -135,3 +135,6 @@ dist
 /target
 *.profraw
 
+# output folder
+/outputs
+
