@@ -7,7 +7,7 @@ practice project for Blockchain ETL using Rust.
 - 18.07.23
 Function implemented: export Ethereum (mainnet) transactions using a block number (using input from the user) and writes them under 'outputs' folder.
 
-# installation 
+# Installation 
 
 1. Clone the repo
 ```
