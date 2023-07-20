@@ -4,29 +4,30 @@ practice project for Blockchain ETL using Rust.
 
 # Changelog
 
-- 18.07.23
-Function implemented: export Ethereum (mainnet) transactions using a block number (using input from the user) and writes them under 'outputs' folder.
+- 18.07.23 : <br>
+[**Function implemented**] 
+export Ethereum (mainnet) transactions using a block number (using input from the user) and writes them under 'outputs' folder.
 
 # Installation 
 
-1. Clone the repo
+__1. Clone the repo__
 ```
 git clone https://github.com/arahangua/rust_blockchain_etl.git
 ```
 
 
-2. Create .env file in the root directory and set "ETH_MAINNET_EXECUTION_RPC" path. (e.g. use Alchemy, Infura, etc.)
+__2. Create .env file in the root directory and set "ETH_MAINNET_EXECUTION_RPC" path. (e.g. use Alchemy, Infura, etc.)__
 ```
 // inside your .env file
 ETH_MAINNET_EXECUTION_RPC = "Your address of RPC provider"
 ```
 
-3. Build the project
+__3. Build the project__
 ```
 cargo build --release
 ```
 
-4. Run ETL job
+__4. Run ETL job__
 ```
 ./target/release/rust_blockchain_etl --help
 ``` 
